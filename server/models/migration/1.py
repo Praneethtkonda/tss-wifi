@@ -7,15 +7,16 @@ This migration is about bringing up the initial schematics
 
 QUERIES = [
     """
-    CREATE TYPE REQ_STATUS AS ENUM ('REQUESTED', 'APPROVED', 'DENIED');
+    CREATE TYPE REQ_STATUS AS ENUM ('REQUESTED', 'PENDING', 'APPROVED', 'DENIED');
     """,
     """
     CREATE TABLE IF NOT EXISTS approvals (
-        id serial primary key,
+        id serial,
         name text not null,
-        phone text,
+        phone VARCHAR(10),
         requested_at timestamp not null,
-        status text
+        status REQ_STATUS default 'REQUESTED'::REQ_STATUS,
+        PRIMARY KEY (name, phone)
     );
     """,
     """

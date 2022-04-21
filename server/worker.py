@@ -1,9 +1,6 @@
 import os
 import time
-
-# from prechecks import init
-
-# init()
+from datetime import datetime
 
 from celery import Celery
 from models import model
@@ -22,3 +19,15 @@ def health_celery_task():
     time.sleep(5)
     print(model.sample())
     return {"Status": "Working"}
+
+
+@celery.task(name="req_access")
+def req_access(name, number):
+    print(name, number)
+    ts = datetime.today().isoformat()
+    try:
+        model.req_access(name, number, ts)
+    except Exception as e:
+        print(e)
+
+    return True
