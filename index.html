@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+    body {
+        text-align: center;
+        overflow: auto;
+        font-family: "Lato", sans-serif;
+        color: rgba(0, 0, 0, 0.8);
+        padding: 1em;
+        /* min-height: 100vh; */
+        /* min-width: 300px; */
+    }
+
+    h1 {
+        margin: 1.2em 0;
+        text-align: center;
+    }
+
+    h4 {
+        margin: 1.2em 0;
+        text-align: center;
+    }
+
+    .status {
+        text-align: center;
+    }
+
+    .ele {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    label {
+        font-size: 1.2em;
+        padding: 1.2em 1em 0.5em 0;
+    }
+
+    label+input:not([type=submit]) {
+        margin-bottom: 0.1em;
+    }
+
+    input:not([type=submit]) {
+        font-size: 1em;
+        padding: 1em;
+        border: 1px solid rgba(0, 0, 0, 0.5);
+        outline: none;
+        transition: color 0.2s, background 0.2s;
+    }
+
+    input:not([type=submit]):focus {
+        background: #3d1523;
+        /* border: 8px solid #3d1523; */
+        color: #fff;
+    }
+
+    .button-row {
+        /* max-width: 0px; */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding-bottom: 1.3em;
+    }
+
+    .button-col {
+        /* max-width: 0px; */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: stretch;
+        margin-bottom: 20px;
+        /* padding-bottom: 1.3em; */
+    }
+
+    button {
+        /* margin: 20px; */
+        margin-right: 10px;
+        margin-left: 10px;
+        padding: 15px;
+        border: 1px solid rgba(0, 0, 0, 0.8);
+        background: #fff;
+        cursor: pointer;
+    }
+
+    .first {
+        border-radius: 10px;
+        background: #fff;
+        transition: all 0.5s ease-in-out;
+    }
+
+    .first:hover {
+        color: #fff;
+        background: #3d1523;
+    }
+    .tss-form {
+        display: inline-block;
+    /* background: red; */
+    }
+</style>
+<h1> LP wifi portal</h1>
+<h4> Register/Check your wifi approval request</h4>
+
+<div class="tss-form">
+    <div class="button-col">
+        <p class="ele">
+            <input id="name" placeholder="Enter your name" name="name" />
+        </p>
+        <p class="ele">
+            <input id="phone" name="phone" placeholder="Enter your phone number" type="tel" />
+        </p>
+    </div>
+    <div class="button-row">
+        <button class="first" onclick="requestForApproval()">Request for approval</button>
+        <button class="first" onclick="checkApproval()">Check approval status</button>
+    </div>
+</div>
+<div class="status">
+    <h3>Approval status: Pending</h3>
+    <p>Password: ***</p>
+</div>
+<script>
+    function requestForApproval() {
+        const nameValue = document.getElementById("name").value;
+        console.log(nameValue);
+        const phoneNumber = document.getElementById("phone").value;
+        console.log(phoneNumber);
+        let url = 'http://127.0.0.1:3000/api/health';
+        // const data = { title: "The Matrix", year: "1994" };
+        url = 'http://127.0.0.1:3000/api/ask_for_access'
+        const data = {
+            "name": nameValue,
+            "mobilenumber": phoneNumber
+        }
+        fetch(
+            url,
+            {
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+                method: "POST"
+            }
+        ).then(data => data.json())
+            .then((json) => {
+                console.log(JSON.stringify(json))
+            }).catch((err) => {
+                console.log(err);
+            });
+    }
+
+    function checkApproval() {
+        console.log("Just a dummy method for the time being")
+    }
+</script>
+
+</html>
