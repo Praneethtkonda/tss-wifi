@@ -7,3 +7,4 @@ redis==3.5.3
 requests==2.26.0
 uvicorn==0.15.0
 psycopg2-binary==2.9.2
+cryptography==37.0.2

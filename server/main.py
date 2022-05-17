@@ -10,14 +10,13 @@ from routes import tasks
 
 # Use openapi_url=None for disabling the openapi spec
 app = FastAPI(title=settings.PROJECT_NAME)
-origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
+    allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
+    allow_credentials=True,
 )
 
 api_router = APIRouter()
