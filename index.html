@@ -165,13 +165,13 @@
     const URL = `http://127.0.0.1`;
     const PORT = 3000;
 
-    function generateHeader(name, number, otp='') {
+    function generateHeader(name, number, otp = '') {
         const obj = {
             "name": name,
             "mobilenumber": number
         };
         if (otp) {
-            Object.assign(obj, {"otp": otp, "ssid_name": "TSSP"});
+            Object.assign(obj, { "otp": otp, "ssid_name": "TSSP" });
         }
         const headersToSend = {
             headers: { 'Content-Type': 'application/json' },
@@ -186,10 +186,10 @@
             .then(data => data.json())
             .then((json) => {
                 if (json) {
-                    if(json.error) {
+                    if (json.error) {
                         showTooltip('error', json.error);
                     }
-                    else if(json.warn) {
+                    else if (json.warn) {
                         showTooltip('warning', json.warn);
                     }
                 }
@@ -200,7 +200,7 @@
             });
     }
 
-    function showTooltip(type, message, time=5) {
+    function showTooltip(type, message, time = 5) {
         /*
             Four types of tooltip
             1. success
@@ -239,7 +239,7 @@
         const nameValue = document.getElementById("name").value || '';
         const phoneNumber = document.getElementById("phone").value.toString() || '';
         if (!_input_validation(nameValue, phoneNumber)) return;
-        if (state && (state['name'] !== nameValue || state['phone'] !== phoneNumber )) {
+        if (state && (state['name'] !== nameValue || state['phone'] !== phoneNumber)) {
             state['name'] = nameValue;
             state['phone'] = phoneNumber;
         }
@@ -258,7 +258,7 @@
         approval_status(nameValue, phoneNumber);
         showTooltip('info', 'Checking approval status', 2);
     }
-    
+
     function approval_status(name, phone) {
         const div = document.createElement('div');
         div.className = 'approval';
@@ -270,16 +270,16 @@
         if (state && state['name'] === name && state['phone'] === phone) {
             input_changed = false;
         }
-        if (state && (state['name'] !== name || state['phone'] !== phone )) {
-            state['name'] =  name;
+        if (state && (state['name'] !== name || state['phone'] !== phone)) {
+            state['name'] = name;
             state['phone'] = phone;
         }
         rRequest(options).then((data) => {
             const statusDiv = document.getElementById('status');
             const status = data && data.status || '';
-            if(statusDiv.innerHTML && !input_changed) {
+            if (statusDiv.innerHTML && !input_changed) {
                 console.log(`Input didn't change. So not refreshing the whole dom`);
-                // document.getElementById('approval-status').innerText = `Approval status: ${status}`;
+                document.getElementById('approval-status').innerText = `Approval status: ${status}`;
                 // document.getElementById('otp_main').innerText = `Otp: ${otp_value}`;
                 return;
             }
@@ -296,8 +296,8 @@
                 <div id="genPassword"></div>
             </div>
         `;
-        statusDiv.innerHTML = ``;
-        statusDiv.appendChild(div);
+            statusDiv.innerHTML = ``;
+            statusDiv.appendChild(div);
         });
     }
 
