@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: lp-wifi
+  labels:
+    app: lp-wifi
+    instance: test
+  annotations:
+    service.beta.kubernetes.io/decc-load-balancer-https-backend-ports: "443"
+    service.beta.kubernetes.io/decc-load-balancer-https-redirection-ports: "80:443"
+spec:
+  type: LoadBalancer
+  selector:
+    app: lp-wifi
+    instance: test
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 3005
