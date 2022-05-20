@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lp-wifi
+  labels:
+    app: lp-wifi
+    instance: test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lp-wifi
+      instance: test
+  template:
+    metadata:
+      labels:
+        app: lp-wifi
+        instance: test
+    spec:
+      containers:
+        - name: lp-wifi
+          image: build-docker-stage.artifactory.eng.vmware.com/data_ingestor:0.0.7
+          env:
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: DB_HOST
+              value: db-cluster-ip-service
+            - name: DB_PORT
+              value: '5432'
+            - name: DB_NAME
+              value: postgres
+            - name: DB_PASS
+              value: password
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "100m"
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
