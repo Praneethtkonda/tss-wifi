@@ -6,11 +6,9 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 
 import { generateBoxShadowStyle } from "./helper/styles";
-// import { displayData } from "./helper/fakeData"
 import Button from "./components/Button";
 import Reload from "./components/Reload";
 import WifiForm  from "./components/WifiForm";
-// import { call } from "react-native-reanimated";
 
 const Heading = () => {
   return (
@@ -21,17 +19,9 @@ const Heading = () => {
   );
 };
 const Tab = createBottomTabNavigator();
-// function call_api() {
-//   console.log('button pressed');
-//   fetch('http://localhost:3000/api/fake_data')
-//     .then((data) => data.json())
-//     .then((json) => { console.log('hello'); })
-//     .catch((err) => { data = {}; console.log(err); })
-//     .finally(() => Promise.resolve(JSON.stringify(json)))
-// }
 
 const renderItems = (item) => {
-  const selectHandler = () => {
+  const approveHandler = () => {
     console.log('selected handler');
   }
 
@@ -42,7 +32,7 @@ const renderItems = (item) => {
   const LeftSwipeActions = () => {
     return (
       <View>
-        <Button onPress={selectHandler} title="Approve" styleProps={{ backgroundColor: 'green' }} visible={false} />
+        <Button onPress={approveHandler} title="Approve" styleProps={{ backgroundColor: 'green' }} visible={false} />
       </View>
     );
   };
@@ -72,8 +62,8 @@ const renderItems = (item) => {
           <Text style={styles.itemText}> {item.phone} </Text>
         </View>
         <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-          <Text style={styles.itemText}> {item.state} </Text>
-          <Text style={styles.itemText}> {item.requested_at} </Text>
+          <Text style={styles.itemText}> {item.status} </Text>
+          <Text style={styles.itemText}> {item.ts} </Text>
         </View>
       </View>
     </Swipeable>
@@ -89,31 +79,49 @@ const Item = ({ item }) => (
 function MyTabs() {
   return (
     <Tab.Navigator labeled={false} screenOptions={{ tabBarIconStyle: { display: "none" } }}>
-      <Tab.Screen options={{ headerShown: false, tabBarLabelStyle: { fontSize: 15 } }} name="Requested" children={() => <Main status={'Requested'}/>}/>
-      <Tab.Screen options={{ headerShown: false, tabBarLabelStyle: { fontSize: 15 } }} name="Approved" children={() => <Main status={'Approved'}/>} />
-      <Tab.Screen options={{ headerShown: false, tabBarLabelStyle: { fontSize: 15 } }} name="Denied" children={() => <Main status={'Denied'}/>} />
+      <Tab.Screen options={{ headerShown: false, tabBarLabelStyle: { fontSize: 15 } }} name="Requested" children={() => <Main status={'REQUESTED'}/>}/>
+      <Tab.Screen options={{ headerShown: false, tabBarLabelStyle: { fontSize: 15 } }} name="Approved" children={() => <Main status={'APPROVED'}/>} />
+      <Tab.Screen options={{ headerShown: false, tabBarLabelStyle: { fontSize: 15 } }} name="Denied" children={() => <Main status={'DENIED'}/>} />
       <Tab.Screen options={{ headerShown: false, tabBarLabelStyle: { fontSize: 15 } }} name="SSID details" component={WifiForm} />
     </Tab.Navigator>
   );
 }
 
+// function rRequest(options) {
+//   return fetch(options.url, options.headers)
+//       .then(data => data.json())
+//       .then((json) => {
+//           if (json) {
+//               if (json.error) {
+//                   showTooltip('error', json.error);
+//               }
+//               else if (json.warn) {
+//                   showTooltip('warning', json.warn);
+//               }
+//           }
+//           return Promise.resolve(json);
+//       }).catch((err) => {
+//           console.error(err);
+//           showTooltip('error', 'Some error occured')
+//       });
+// }
+
 function Main(props) {
-  console.log(props);
-  // const items = ['REQUESTED', 'DENIED'];
+  const status = props && props.status || '';
   let [displayData, setdisplayData] = useState(null);
   useEffect(() => {
-    console.log('component mounted');
-    fetch('http://localhost:3000/api/fake_data')
+    fetch('http://localhost:3000/api/all_approval_details', {
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({"status": status}),
+      method: "POST"
+    })
     .then((data) => data.json())
-    .then((data) => { console.log(data); setdisplayData(data) })
+    .then((data) => { console.log(data); setdisplayData(data.data) })
     .catch((err) => { console.log(err); })
   }, []);
   const renderItem = ({ item }) => (
     <Item item={item} />
   );
-  const dropdownChangeHandler = () => {
-    console.log('dropdown changed');
-  }
   const reloadHandler = () => {
     console.log('reload pressed');
   }
