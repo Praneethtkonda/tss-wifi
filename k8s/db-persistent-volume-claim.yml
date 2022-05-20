@@ -5,7 +5,8 @@ metadata:
   name: pvc-db
 spec:
   accessModes:
-    - ReadWriteMany
+    # - ReadWriteMany
+    - ReadWriteOnce
   resources:
     requests:
       storage: 1Gi

@@ -7,12 +7,12 @@ spec:
   selector:
     matchLabels:
       app: db
-      instance: test
+      # instance: test
   template:
     metadata:
       labels:
         app: db
-        instance: test
+        # instance: test
     spec:
       volumes:
         - name: db-storage
@@ -21,15 +21,17 @@ spec:
             claimName: pvc-db
       containers:
         - name: db
-          image: build-docker-stage.artifactory.eng.vmware.com/data_ingestor_db:0.0.1
+          image: asia-south1-docker.pkg.dev/lp-wifi-350713/lp-wifi-docker-repo/postgres:1.0
           ports:
             - containerPort: 5432
-          volumeMounts:
-            - name: db-storage
-              mountPath: /var/lib/postgresql/data
           env:
             - name: POSTGRES_PASSWORD
               value: password
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          volumeMounts:
+            - name: db-storage
+              mountPath: /var/lib/postgresql/data
           resources:
             requests:
               memory: "500Mi"

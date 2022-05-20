@@ -4,22 +4,22 @@ metadata:
   name: lp-wifi
   labels:
     app: lp-wifi
-    instance: test
+    # instance: test
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: lp-wifi
-      instance: test
+      # instance: test
   template:
     metadata:
       labels:
         app: lp-wifi
-        instance: test
+        # instance: test
     spec:
       containers:
         - name: lp-wifi
-          image: build-docker-stage.artifactory.eng.vmware.com/data_ingestor:0.0.7
+          image: asia-south1-docker.pkg.dev/lp-wifi-350713/lp-wifi-docker-repo/tss-wifi_api:1.0
           env:
             - name: POD_IP
               valueFrom:
@@ -34,7 +34,7 @@ spec:
             - name: DB_PASS
               value: password
           ports:
-            - containerPort: 3000
+            - containerPort: 3005
           resources:
             requests:
               memory: "64Mi"

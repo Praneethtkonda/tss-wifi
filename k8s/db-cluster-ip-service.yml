@@ -6,7 +6,7 @@ spec:
   type: ClusterIP
   selector:
     app: db
-    instance: test
+    # instance: test
   ports:
     - port: 5432
       targetPort: 5432
