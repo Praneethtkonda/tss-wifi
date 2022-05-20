@@ -4,6 +4,7 @@ init()
 
 from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from conf.settings import settings
 from routes import tasks
@@ -18,6 +19,8 @@ app.add_middleware(
     allow_headers=["*"],
     allow_credentials=True,
 )
+
+app.mount("/site", StaticFiles(directory="site", html = True), name="site")
 
 api_router = APIRouter()
 
