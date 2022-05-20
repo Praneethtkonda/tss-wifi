@@ -1,8 +1,8 @@
 version: '3.1'
 
 services:
-  redis:
-    image: redis
+  # redis:
+  #   image: redis
 
   postgresdb:
     hostname: postgresdb
@@ -30,18 +30,18 @@ services:
     depends_on:
       - postgresdb
 
-  worker:
-    build:
-      dockerfile: Dockerfile.celery_worker
-      context: ./server
-    volumes:
-      - ./server:/app
-    environment:
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - DB_HOST=postgresdb
-      - DB_PORT=5432
-      - DB_NAME=postgres
-      - DB_PASS=password
-    depends_on:
-      - postgresdb
+  # worker:
+  #   build:
+  #     dockerfile: Dockerfile.celery_worker
+  #     context: ./server
+  #   volumes:
+  #     - ./server:/app
+  #   environment:
+  #     - REDIS_HOST=redis
+  #     - REDIS_PORT=6379
+  #     - DB_HOST=postgresdb
+  #     - DB_PORT=5432
+  #     - DB_NAME=postgres
+  #     - DB_PASS=password
+  #   depends_on:
+  #     - postgresdb

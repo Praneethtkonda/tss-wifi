@@ -1,5 +1,6 @@
-from celery.result import AsyncResult
+# from celery.result import AsyncResult
 from cryptography.fernet import Fernet
+from datetime import datetime
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from helper.fake_data import get_data
@@ -7,7 +8,7 @@ from helper.otp import generate_otp
 from helper.parser import parse_approval_data
 from models import model
 from pydantic import BaseModel
-from worker import health_celery_task, req_access
+# from worker import health_celery_task, req_access
 
 class ReqData(BaseModel):
     name: str
@@ -57,8 +58,10 @@ def req_for_approval(data: ReqData):
     count = model.get_count(name, number)
     if count > 0:
         return JSONResponse({"warn": "Entry with similar details already present. Please proceed further"})
-    task = req_access.delay(name, number)
-    return JSONResponse({"task_id": task.id})
+    # task = req_access.delay(name, number)
+    ts = datetime.today().isoformat()
+    model.req_access(name, number, ts)
+    return JSONResponse({"message": "Entry created"})
 
 @router.post("/load_ssid_details", status_code=201)
 # TODO: Add error handling from db
