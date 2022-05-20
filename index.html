@@ -162,8 +162,10 @@
     const state = {};
     const INPUT_ERROR = `Empty Name or Phone number. Please fill out the details properly`;
     const PHONE_ERROR = `Phone number is not a valid one.`;
-    const URL = `http://127.0.0.1`;
-    const PORT = 3000;
+    let URL = `http://127.0.0.1`; // Dev url
+    URL = `http://34.93.14.219`; // GKE
+    let PORT = 3000;
+    PORT = 5000;
 
     function generateHeader(name, number, otp = '') {
         const obj = {
