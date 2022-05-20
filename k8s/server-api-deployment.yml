@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: lp-wifi
-          image: asia-south1-docker.pkg.dev/lp-wifi-350713/lp-wifi-docker-repo/tss-wifi_api:1.0
+          image: asia-south1-docker.pkg.dev/lp-wifi-350713/lp-wifi-docker-repo/tss-wifi_api:2.0
           env:
             - name: POD_IP
               valueFrom:
