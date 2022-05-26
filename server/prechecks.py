@@ -25,6 +25,10 @@ QUERIES = [
 def _start():
     print("Starting the precheck")
     CONNECTION = f"postgres://postgres:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+    # Supporting heroku deployment
+    conn_url_heroku = os.environ.get("DATABASE_URL", '')
+    if conn_url_heroku != '':
+        CONNECTION = conn_url_heroku
     conn = psycopg2.connect(CONNECTION)
     cursor = conn.cursor()
     for query in QUERIES:
