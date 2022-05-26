@@ -1,0 +1,10 @@
+amqp==5.0.6
+celery==5.1.2
+fastapi==0.70.0
+flower==1.0.0
+pydantic==1.8.2
+redis==3.5.3
+requests==2.26.0
+uvicorn==0.15.0
+psycopg2-binary==2.9.2
+cryptography==37.0.2
