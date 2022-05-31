@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests"> -->
 <style>
     body {
         text-align: center;
@@ -163,8 +162,9 @@
     const state = {};
     const INPUT_ERROR = `Empty Name or Phone number. Please fill out the details properly`;
     const PHONE_ERROR = `Phone number is not a valid one.`;
-    let URL = `http://127.0.0.1`; // Dev url
-    URL = `http://34.93.14.219`; // GKE - Deprecated
+    const OTP_ERROR = 'OTP is not a 5 digit number';
+    let URL = `http://127.0.0.1:3005`; // Dev url
+    // URL = `http://34.93.14.219`; // GKE - Deprecated
     URL = `https://lp-wifi.herokuapp.com` // HEROKU
     // Note: For heroku there is no need to use the port
     let PORT = 3000;
@@ -240,6 +240,15 @@
         return true;
     }
 
+    function _otp_validation(otp) {
+        const regex = /\b\d{5}\b/;
+        if(!regex.test(otp)) {
+            showTooltip('error', OTP_ERROR);
+            return false;
+        }
+        return true;
+    }
+
     function requestForApproval() {
         const nameValue = document.getElementById("name").value || '';
         const phoneNumber = document.getElementById("phone").value.toString() || '';
@@ -291,14 +300,12 @@
             div.innerHTML = `
             <h3 id="approval-status">Approval status: ${status}</h3>
             <div id="otp-section-form">
-                <h5>Enter otp to obtain password</h5>
-                <h4 id='otp_main'>Otp: </h4>
-                <input id="otp_input" placeholder="Enter your otp" name="otp" required />
+                <h5>Enter OTP to obtain wifi password</h5>
+                <input id="otp_input" placeholder="Enter your OTP" name="otp" type="tel" required />
                 <div class="button-row">
                     <button class="first" onclick="generateOtp('${name}', '${phone}')"">Generate otp</button>
                     <button class="first" onclick="getPass('${name}', '${phone}')">Get pass</button>
                 </div>
-                <div id="genPassword"></div>
             </div>
         `;
             statusDiv.innerHTML = ``;
@@ -313,8 +320,7 @@
         };
         rRequest(options).then((data) => {
             if (data && !data.error) {
-                const div = document.getElementById('otp_main');
-                div.innerText = `Otp: ${data.otp}`
+                showTooltip('success', 'OTP generated successfully, pls check your phone');
             }
         });
     }
@@ -323,6 +329,7 @@
         const div = document.createElement('div');
         div.className = 'pass';
         const otp_input = document.getElementById("otp_input").value || 'wrong';
+        if (!_otp_validation(otp_input)) return;
         const options = {
             url: `${URL}/api/get_ssid_details`,
             headers: generateHeader(name, phone, otp_input)
@@ -330,13 +337,7 @@
         rRequest(options).then((data) => {
             if (data && !data.error) {
                 const pass = data.p;
-                div.innerHTML = `
-                    <h6>Password: ${pass}</h6>
-                `;
-                document.getElementById('genPassword').appendChild(div);
-                setTimeout(() => {
-                    document.getElementById('genPassword').removeChild(div);
-                }, 5000);
+                showTooltip('info', `Wifi Password is: ${pass}<br>This message stays for 10 seconds`, 10);
             }
         });
     }

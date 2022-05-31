@@ -33,11 +33,23 @@ def get_approval_status(name, number):
 def get_approval_details(status):
     dbConnection = models.db.DbConnection()
     cursor = dbConnection.getCursor()
-    query = f"""SELECT * FROM approvals WHERE status = '{status}'"""
+    query = f"""SELECT * FROM approvals WHERE status = '{status}'
+                ORDER BY requested_at DESC"""
     cursor.execute(query)
     data = cursor.fetchall()
     dbConnection.closeConn()
     return data
+
+def change_approval_status(name, number, status, mac_address, ts):
+    dbConnection = models.db.DbConnection()
+    cursor = dbConnection.getCursor()
+    query = f"""UPDATE approvals
+                SET status='{status}', requested_at='{ts}'
+                WHERE name = '{name}' AND phone = '{number}'
+                AND (SELECT count(*) from admins where mac_address = '{mac_address}') = 1
+                """
+    cursor.execute(query)
+    dbConnection.closeConn()
 
 def get_priv_key():
     dbConnection = models.db.DbConnection()
@@ -91,6 +103,17 @@ def insert_otp(otp, name, phone):
                 VALUES (DEFAULT, '{name}', '{phone}', '{otp}', NOW() + INTERVAL '5 minutes')
                 ON CONFLICT (name, phone) DO UPDATE
                 SET otp = '{otp}', valid_till = NOW() + INTERVAL '5 minutes'
+            """
+    cursor.execute(query)
+    dbConnection.closeConn()
+    return True
+
+def register_admin(name, phone, mac_address):
+    dbConnection = models.db.DbConnection()
+    cursor = dbConnection.getCursor()
+    query = f"""INSERT INTO admins
+                VALUES ('{name}', '{phone}', '{mac_address}')
+                ON CONFLICT (mac_address) DO NOTHING
             """
     cursor.execute(query)
     dbConnection.closeConn()

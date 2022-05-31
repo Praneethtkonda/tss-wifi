@@ -17,6 +17,17 @@ class ReqData(BaseModel):
 class ReqDataAll(BaseModel):
     status: str
 
+class ReqDataSpecific(BaseModel):
+    name: str
+    mobilenumber: str
+    status: str
+    mac_address: str
+
+class Admin(BaseModel):
+    name: str
+    mobilenumber: str
+    mac_address: str
+
 class SSIDData(BaseModel):
     ssid_name: str
     ssid_pass: str
@@ -48,6 +59,16 @@ def all_approv_details(data: ReqDataAll):
     data = model.get_approval_details(status)
     data = parse_approval_data(data)
     return JSONResponse({"data": data})
+
+@router.post("/change_approval_status", status_code=201)
+def change_appov_status(data: ReqDataSpecific):
+    name = data.name.strip()
+    number = data.mobilenumber.strip()
+    status = data.status.strip()
+    mac_address = data.mac_address.strip()
+    ts = datetime.today().isoformat()
+    model.change_approval_status(name, number, status, mac_address, ts)
+    return JSONResponse({"message": f"Changed status to {status}"})
 
 # Route where user sends data to backend
 # TODO: Do data validations in the future
@@ -123,3 +144,12 @@ def ch_approval_status(data: ReqData):
     status = approval_status[0]
     result = {"status": status}
     return JSONResponse(result)
+
+# TODO: Secure this route
+@router.post("/register_admin", status_code=201)
+def change_appov_status(data: Admin):
+    name = data.name.strip()
+    number = data.mobilenumber.strip()
+    mac_address = data.mac_address.strip()
+    model.register_admin(name, number, mac_address)
+    return JSONResponse({"message": f"Registered admin successfully"})
