@@ -5,7 +5,7 @@ KEY_NAME = 'enc_key'
 def get_count(name='', number=''):
     dbConnection = models.db.DbConnection()
     cursor = dbConnection.getCursor()
-    query = f"""SELECT count(*) from approvals where name = '{name}' or phone = '{number}'"""
+    query = f"""SELECT count(*) from approvals where phone = '{number}'"""
     cursor.execute(query)
     data = cursor.fetchone()[0]
     dbConnection.closeConn()

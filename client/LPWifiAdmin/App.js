@@ -67,10 +67,10 @@ const renderItems = (item) => {
     const [data, err] = await request_upstream(url_prefix, body);
     if (err) {
       console.log(err);
-      Alert("Error occured");
+      Alert.alert("Error occured");
     } else {
       console.log('Successfully changed the status');
-      Alert("Successfully changed the status");
+      Alert.alert("Successfully changed the status");
     }
     // reloadHandler();
   }
@@ -87,10 +87,10 @@ const renderItems = (item) => {
     const [data, err] = await request_upstream(url_prefix, body);
     if (err) {
       console.log(err);
-      Alert("Error occured");
+      Alert.alert("Error occured");
     } else {
       console.log('Successfully changed the status');
-      Alert("Successfully changed the status");
+      Alert.alert("Successfully changed the status");
     }
     // reloadHandler();
   }
