@@ -2,6 +2,9 @@ import React from 'react';
 import { Text, StyleSheet, Pressable } from 'react-native';
 
 const genButtonStyle = (styleProps) => {
+    if (styleProps.custom_style) {
+        return styleProps.custom_style;
+    }
     return {
         paddingVertical: 8,
         paddingHorizontal: 8,

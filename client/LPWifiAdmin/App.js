@@ -1,14 +1,46 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View, SafeAreaView } from 'react-native';
 import { FlatList, StatusBar } from 'react-native';
+import 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
-
 import { generateBoxShadowStyle } from "./helper/styles";
+import DeviceInfo from 'react-native-device-info';
+
 import Button from "./components/Button";
 import Reload from "./components/Reload";
 import WifiForm  from "./components/WifiForm";
+
+const UPSTREAM_URL = `https://lp-wifi.herokuapp.com`;
+// const UPSTREAM_URL = `http://localhost:3005`;
+
+function request_upstream(url, body, cb) {
+  return fetch(`${UPSTREAM_URL}/${url}`, {
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+    method: "POST"
+  })
+  .then((data) => data.json())
+  .then((data) => Promise.resolve([data, null]))
+  .catch((err) => Promise.reject([null, err]))
+}
+
+/**
+ * Helper function to return mac address
+ * @returns mac address
+ */
+async function _getMacAddress() {
+  const mac_address = await DeviceInfo.getMacAddress();
+  return mac_address;
+}
+
+function _visible(curr_status, button) {
+  console.log(curr_status, button)
+  if (curr_status === 'APPROVED' && button === 'approve') return false
+  if (curr_status === 'REJECTED' && button === 'reject') return false
+  return true;
+}
 
 const Heading = () => {
   return (
@@ -21,34 +53,68 @@ const Heading = () => {
 const Tab = createBottomTabNavigator();
 
 const renderItems = (item) => {
-  const approveHandler = () => {
-    console.log('selected handler');
+
+  const approveHandler = async () => {
+    const url_prefix = `api/change_approval_status`;
+    const mac_address = await _getMacAddress();
+    const body = {
+      "name": item.name,
+      "mobilenumber": item.phone,
+      "status": "APPROVED",
+      "mac_address": mac_address
+    };
+    const [data, err] = await request_upstream(url_prefix, body);
+    if (err) {
+      console.log(err);
+    } else {
+      console.log('Successfully changed the status');
+    }
+    // reloadHandler();
   }
 
-  const rejectHandler = () => {
-    console.log('reject handler');
+  const rejectHandler = async () => {
+    const url_prefix = `api/change_approval_status`;
+    const mac_address = await _getMacAddress();
+    const body = {
+      "name": item.name,
+      "mobilenumber": item.phone,
+      "status": "DENIED",
+      "mac_address": mac_address
+    };
+    const [data, err] = await request_upstream(url_prefix, body);
+    if (err) {
+      console.log(err);
+    } else {
+      console.log('Successfully changed the status');
+    }
+    // reloadHandler();
   }
 
   const LeftSwipeActions = () => {
+    let v = <Button onPress={approveHandler} title="Approve" styleProps={{ backgroundColor: 'green' }}/>
+    if(item.status === 'APPROVED') {
+      v = <Text> </Text>
+    }
     return (
       <View>
-        <Button onPress={approveHandler} title="Approve" styleProps={{ backgroundColor: 'green' }} visible={false} />
+        {v}
       </View>
     );
   };
   const rightSwipeActions = () => {
+    let v = <Button onPress={rejectHandler} title="Reject" styleProps={{ backgroundColor: 'red' }} />
+    if(item.status === 'DENIED') {
+      v = <Text> </Text>
+    }
     return (
       <View>
-        <Button onPress={rejectHandler} title="Reject" styleProps={{ backgroundColor: 'red' }} />
+        {v}
       </View>
     );
   };
-  const swipeFromLeftOpen = () => {
-    console.log('Swipe from left');
-  };
-  const swipeFromRightOpen = () => {
-    console.log('Swipe from right');
-  };
+  const swipeFromLeftOpen = () => {};
+  const swipeFromRightOpen = () => {};
+
   return (
     <Swipeable
       renderLeftActions={LeftSwipeActions}
@@ -82,58 +148,63 @@ function MyTabs() {
       <Tab.Screen options={{ headerShown: false, tabBarLabelStyle: { fontSize: 15 } }} name="Requested" children={() => <Main status={'REQUESTED'}/>}/>
       <Tab.Screen options={{ headerShown: false, tabBarLabelStyle: { fontSize: 15 } }} name="Approved" children={() => <Main status={'APPROVED'}/>} />
       <Tab.Screen options={{ headerShown: false, tabBarLabelStyle: { fontSize: 15 } }} name="Denied" children={() => <Main status={'DENIED'}/>} />
-      <Tab.Screen options={{ headerShown: false, tabBarLabelStyle: { fontSize: 15 } }} name="SSID details" component={WifiForm} />
+      <Tab.Screen options={{ headerShown: false, tabBarLabelStyle: { fontSize: 15 } }} name="Admin" component={WifiForm} />
     </Tab.Navigator>
   );
 }
 
-// function rRequest(options) {
-//   return fetch(options.url, options.headers)
-//       .then(data => data.json())
-//       .then((json) => {
-//           if (json) {
-//               if (json.error) {
-//                   showTooltip('error', json.error);
-//               }
-//               else if (json.warn) {
-//                   showTooltip('warning', json.warn);
-//               }
-//           }
-//           return Promise.resolve(json);
-//       }).catch((err) => {
-//           console.error(err);
-//           showTooltip('error', 'Some error occured')
-//       });
-// }
-
 function Main(props) {
   const status = props && props.status || '';
-  let [displayData, setdisplayData] = useState(null);
+  let [displayData, setdisplayData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  
+  const contactGod = async () => {
+    const url_prefix = `api/all_approval_details`;
+    const body = { "status": status }
+    const [data, err] = await request_upstream(url_prefix, body);
+    if (err) {
+      console.log(err);
+    } else {
+      console.log(data);
+      setdisplayData(data.data);
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    fetch('http://localhost:3000/api/all_approval_details', {
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({"status": status}),
-      method: "POST"
-    })
-    .then((data) => data.json())
-    .then((data) => { console.log(data); setdisplayData(data.data) })
-    .catch((err) => { console.log(err); })
+    contactGod();
   }, []);
+
   const renderItem = ({ item }) => (
     <Item item={item} />
   );
   const reloadHandler = () => {
-    console.log('reload pressed');
+    setLoading(true);
+    setdisplayData([]);
+    console.log('reload pressed', props.status);
+    contactGod();
   }
+
+  const showEmptyListView = () =>(
+    <View style={styles.emptyView}>
+        <Text style={styles.baseText}></Text>
+    </View>
+  );
+  
   return (
     <SafeAreaView style={styles.container_1}>
       <Heading />
       <Reload onPress={reloadHandler} title='Reload' />
-      <FlatList
-        data={displayData}
-        renderItem={renderItem}
-        keyExtractor={item => item.id}
-      />
+      {loading && <Text style={styles.baseText}>Loading...</Text>}
+      {displayData &&
+        (<FlatList
+          style={{ 'flexGrow': 0, 'height': '100%' }}
+          ListEmptyComponent={showEmptyListView()}
+          data={displayData}
+          renderItem={renderItem}
+          keyExtractor={item => item.id}
+        />)}
+      
     </SafeAreaView>
   );
 }
@@ -151,7 +222,7 @@ const styles = StyleSheet.create({
     padding: 16, paddingTop: 30,
     display: 'flex',
     backgroundColor: '#fef5e5',
-    marginTop: StatusBar.currentHeight || 0,
+    marginTop: StatusBar.currentHeight || 0
   },
   baseText: {
     fontWeight: 'bold',
@@ -168,7 +239,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   innerText: {
-    color: 'red'
+    color: 'blue'
   },
   item: {
     // backgroundColor: '#f9c2ff',
@@ -203,4 +274,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 10,
   },
+  emptyView: {
+    marginTop: 100
+  }
 });
