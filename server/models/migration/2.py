@@ -10,7 +10,7 @@ QUERIES = [
     CREATE TABLE IF NOT EXISTS admins (
         name TEXT NOT NULL,
         phone VARCHAR(10) NOT NULL,
-        mac_address VARCHAR(17) NOT NULL,
+        mac_address TEXT NOT NULL,
         PRIMARY KEY (mac_address)
     );
     """

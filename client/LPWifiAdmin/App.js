@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View, SafeAreaView } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, Alert } from 'react-native';
 import { FlatList, StatusBar } from 'react-native';
 import 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
@@ -23,7 +23,7 @@ function request_upstream(url, body, cb) {
   })
   .then((data) => data.json())
   .then((data) => Promise.resolve([data, null]))
-  .catch((err) => Promise.reject([null, err]))
+  .catch((err) => Promise.reject([[], err]))
 }
 
 /**
@@ -31,8 +31,9 @@ function request_upstream(url, body, cb) {
  * @returns mac address
  */
 async function _getMacAddress() {
-  const mac_address = await DeviceInfo.getMacAddress();
-  return mac_address;
+  // const mac_address = await DeviceInfo.getMacAddress();
+  const unique_id = await DeviceInfo.getUniqueId();
+  return unique_id;
 }
 
 function _visible(curr_status, button) {
@@ -66,8 +67,10 @@ const renderItems = (item) => {
     const [data, err] = await request_upstream(url_prefix, body);
     if (err) {
       console.log(err);
+      Alert("Error occured");
     } else {
       console.log('Successfully changed the status');
+      Alert("Successfully changed the status");
     }
     // reloadHandler();
   }
@@ -84,8 +87,10 @@ const renderItems = (item) => {
     const [data, err] = await request_upstream(url_prefix, body);
     if (err) {
       console.log(err);
+      Alert("Error occured");
     } else {
       console.log('Successfully changed the status');
+      Alert("Successfully changed the status");
     }
     // reloadHandler();
   }

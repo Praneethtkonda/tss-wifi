@@ -22,8 +22,9 @@ function request_upstream(url, body, cb) {
  * @returns mac address
  */
 async function _getMacAddress() {
-    const mac_address = await DeviceInfo.getMacAddress();
-    return mac_address;
+    // const mac_address = await DeviceInfo.getMacAddress();
+    const unique_id = await DeviceInfo.getUniqueId();
+    return unique_id;
 }
   
 
@@ -56,6 +57,7 @@ const WifiForm = () => {
         const url_prefix = `api/register_admin`;
         console.log(name, phone);
         const mac_address = await _getMacAddress();
+        console.log(mac_address);
         const body = { 'name': name, 'mobilenumber': phone, 'mac_address': mac_address};
         request_upstream(url_prefix, body, (data, err) => {
             if (err) {
@@ -66,13 +68,14 @@ const WifiForm = () => {
     };
 
     return (
-        <View style={{ flexGrow: 1, justifyContent: 'space-around', backgroundColor: '#fef5e5', }}>
+        <View style={{ flexGrow: 1, backgroundColor: '#fef5e5', }}>
             <SafeAreaView>
                 <Text style={styles.labelHeader}>Enter your SSID details</Text>
                 <TextInput
                     style={styles.input}
                     onChangeText={onChangeText}
                     placeholder="Enter Wifi SSID"
+                    placeholderTextColor="black" 
                     value={text}
                 />
                 <TextInput
@@ -80,7 +83,7 @@ const WifiForm = () => {
                     onChangeText={onChangeNumber}
                     value={number}
                     placeholder="Enter Wifi password"
-                    keyboardType="numeric"
+                    placeholderTextColor="black" 
                 />
                 <Button onPress={() => ssidHandler(text, number)} title="Register SSID details" styleProps={{ custom_style: styles.custom_button }} />
             </SafeAreaView>
@@ -103,6 +106,7 @@ const WifiForm = () => {
                     style={styles.input}
                     onChangeText={onChangeAdminName}
                     placeholder="Enter your name"
+                    placeholderTextColor="black" 
                     value={admin_name}
                 />
                 <TextInput
@@ -110,6 +114,7 @@ const WifiForm = () => {
                     onChangeText={onChangeAdminPhone}
                     value={admin_phone}
                     placeholder="Enter your phone"
+                    placeholderTextColor="black"
                     keyboardType="numeric"
                 />
                 <Button onPress={() => registerHandler(admin_name, admin_phone)} title="Register" styleProps={{ custom_style: styles.custom_button_2 }} />
