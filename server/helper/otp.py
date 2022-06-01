@@ -15,7 +15,7 @@ def generate_otp(num_digits):
 def send_otp_sms(otp, mobilenumber):
     api_key = os.environ.get("OTP_KEY", "")
     if api_key == "":
-        return False
+        return 'Failed'
     payload = json.dumps(
         {
             "route": "otp",

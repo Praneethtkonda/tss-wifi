@@ -197,8 +197,11 @@
                     else if (json.warn) {
                         showTooltip('warning', json.warn);
                     }
-                    else if (json.message) {
-                        showTooltip('success', json.message)
+                    else if (json.succ_message) {
+                        showTooltip('success', json.succ_message)
+                    }
+                    else if (json.info_message) {
+                        showTooltip('info', json.info_message)
                     }
                 }
                 return Promise.resolve(json);
@@ -323,7 +326,8 @@
         };
         rRequest(options).then((data) => {
             if (data && !data.error) {
-                showTooltip('success', 'OTP generated successfully, pls check your phone');
+                console.debug('Success')
+                // showTooltip('success', 'OTP generated successfully, pls check your phone');
             }
         });
     }

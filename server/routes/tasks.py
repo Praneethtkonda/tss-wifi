@@ -126,13 +126,16 @@ def get_otp(data: ReqData):
     otp_db = model.get_otp_details(name, number)
     if otp_db:
         result = {"otp": otp_db}
-        result = {"message": "Otp already got generated, pls check your mobile"}
+        result = {"info_message": "Otp already got generated, pls check your mobile"}
         return JSONResponse(result)
     otp = generate_otp(num_digits=5)
-    model.insert_otp(otp, name, number)
     # Sending sms only if otp gets expired
     response = send_otp_sms(otp, number)
-    result = {"message": "Successfully generated otp, pls check your mobile"}
+    if 'success' not in response:
+        result = {"error": "Cannot generate otp. Try generating it again"}
+        return JSONResponse(result)
+    model.insert_otp(otp, name, number, otp_validity='5 minutes')
+    result = {"succ_message": "Successfully generated otp, pls check your mobile"}
     return JSONResponse(result)
 
 
