@@ -197,6 +197,9 @@
                     else if (json.warn) {
                         showTooltip('warning', json.warn);
                     }
+                    else if (json.message) {
+                        showTooltip('success', json.message)
+                    }
                 }
                 return Promise.resolve(json);
             }).catch((err) => {

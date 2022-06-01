@@ -96,13 +96,13 @@ def get_otp_details(name, phone):
     dbConnection.closeConn()
     return out
 
-def insert_otp(otp, name, phone):
+def insert_otp(otp, name, phone, otp_validity='5 minutes'):
     dbConnection = models.db.DbConnection()
     cursor = dbConnection.getCursor()
     query = f"""INSERT INTO otps
-                VALUES (DEFAULT, '{name}', '{phone}', '{otp}', NOW() + INTERVAL '5 minutes')
+                VALUES (DEFAULT, '{name}', '{phone}', '{otp}', NOW() + INTERVAL '{otp_validity}')
                 ON CONFLICT (name, phone) DO UPDATE
-                SET otp = '{otp}', valid_till = NOW() + INTERVAL '5 minutes'
+                SET otp = '{otp}', valid_till = NOW() + INTERVAL '{otp_validity}'
             """
     cursor.execute(query)
     dbConnection.closeConn()

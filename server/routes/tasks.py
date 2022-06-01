@@ -4,7 +4,7 @@ from datetime import datetime
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from helper.fake_data import get_data
-from helper.otp import generate_otp
+from helper.otp import generate_otp, send_otp_sms
 from helper.parser import parse_approval_data
 from models import model
 from pydantic import BaseModel
@@ -126,10 +126,13 @@ def get_otp(data: ReqData):
     otp_db = model.get_otp_details(name, number)
     if otp_db:
         result = {"otp": otp_db}
+        result = {"message": "Otp already got generated, pls check your mobile"}
         return JSONResponse(result)
-    otp = generate_otp(5)
+    otp = generate_otp(num_digits=5)
     model.insert_otp(otp, name, number)
-    result = {"otp": otp}
+    # Sending sms only if otp gets expired
+    response = send_otp_sms(otp, number)
+    result = {"message": "Successfully generated otp, pls check your mobile"}
     return JSONResponse(result)
 
 
